@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include eagle_wings *.css
+recursive-include eagle_wings *.csv
+recursive-include eagle_wings *.html
+recursive-include eagle_wings *.ico
+recursive-include eagle_wings *.js
+recursive-include eagle_wings *.json
+recursive-include eagle_wings *.md
+recursive-include eagle_wings *.png
+recursive-include eagle_wings *.py
+recursive-include eagle_wings *.svg
+recursive-include eagle_wings *.txt
+recursive-exclude eagle_wings *.pyc
