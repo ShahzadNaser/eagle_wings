@@ -6,28 +6,32 @@ frappe.ui.form.on('Estimates', {
 
 	},
 	default_price_list: function(frm){
-		var args = frm.events._get_args(frm.doc.items);
+		console.log(frm.doc.default_price_list,frm.doc.items,frm.doc.items.length)
 		console.log("=========price_list_rate===============");
-		if (!((args.items && args.items.length) || args.defualt_price_list)) {
-			return;
-		}
-		return frm.call({
-			method: "erpnext.stock.get_item_details.apply_price_list",
-			args: {	args: args },
-			callback: function(r) {
-				if (!r.exc) {
-					frappe.run_serially([
-						() => frm.set_value("currency", r.message.parent.price_list_currency),
-						() => frm.set_value("conversion_rate", r.message.parent.plc_conversion_rate),
-						() => {
-							if(args.items.length) {
-								frm.events.set_values_for_item_list(r.message.children);
-							}
-						}
-					]);
-				}
+		if(frm.doc.default_price_lis && frm.doc.items.length>0 && frm.doc.items[0].item_code){
+			var args = frm.events._get_args(frm.doc.items);
+			console.log("=========price_list_rate===============");
+			if (!((args.items && args.items.length) || args.defualt_price_list)) {
+				return;
 			}
-		});
+			return frm.call({
+				method: "erpnext.stock.get_item_details.apply_price_list",
+				args: {	args: args },
+				callback: function(r) {
+					if (!r.exc) {
+						frappe.run_serially([
+							() => frm.set_value("currency", r.message.parent.price_list_currency),
+							() => frm.set_value("conversion_rate", r.message.parent.plc_conversion_rate),
+							() => {
+								if(args.items.length) {
+									frm.events.set_values_for_item_list(r.message.children);
+								}
+							}
+						]);
+					}
+				}
+			});
+		}
 
 	},
 	set_values_for_item_list: function(children) {
@@ -175,9 +179,9 @@ frappe.ui.form.on('Estimates Item', {
 								item.rate = r.message.price_list_rate;		
 								item.valuation_rate = r.message.valuation_rate;		
 								item.qty = r.message.qty;
-								frm.refresh_field("items");
 							},
 							() => {
+								frm.events.calculate_items_total(item, false);
 								frm.trigger("calculate_totals");
 							}
 
