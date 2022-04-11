@@ -3,14 +3,12 @@
 
 frappe.ui.form.on('Estimates', {
 	refresh: function(frm) {
-
+		if(frm.doc.docstatus == 1)
+			frm.add_custom_button(__('Sales Invoice'), () => frm.events.make_sales_invoice(), __('Create'));
 	},
 	default_price_list: function(frm){
-		console.log(frm.doc.default_price_list,frm.doc.items,frm.doc.items.length)
-		console.log("=========price_list_rate===============");
 		if(frm.doc.default_price_lis && frm.doc.items.length>0 && frm.doc.items[0].item_code){
 			var args = frm.events._get_args(frm.doc.items);
-			console.log("=========price_list_rate===============");
 			if (!((args.items && args.items.length) || args.defualt_price_list)) {
 				return;
 			}
@@ -62,15 +60,19 @@ frappe.ui.form.on('Estimates', {
 			"total_qty":0,
 			"sub_total":0,
 			"markup":0,
+			"markup_p":0,
 		};
 		frm.doc.items.forEach(function(item){
 			totals.sub_total = totals.sub_total + item.base_amount;
 			totals.markup = totals.markup + item.gross_profit;
 			totals.total_qty = totals.total_qty + item.qty;
-			totals.total = totals.total + item.total_amount;
+			totals.total = totals.total + item.total_amount;			
 		});
+		totals.markup_p = flt(totals.markup/totals.total)*100;
+
 		frm.set_value("sub_total",totals.sub_total);
 		frm.set_value("markup",totals.markup);
+		frm.set_value("markup_percent",totals.markup_p);
 		frm.set_value("total_qty",totals.total_qty);
 		frm.set_value("total",totals.total);
 		frm.refresh_fields();
@@ -110,23 +112,20 @@ frappe.ui.form.on('Estimates', {
 			}else{
 				item.rate = flt(item.valuation_rate) + flt((item.valuation_rate/100)*item.margin)
 			}
-			margin = true;
-		}
-	
-		item.total_amount = flt(flt(item.rate)*flt(item.qty));
-		item.base_amount = flt(flt(item.valuation_rate)*flt(item.qty));
-		item.gross_profit = item.total_amount - item.base_amount;
-	
-		if(!margin){
+		}else{
 			if(item.margin_type == "Amount"){
 				item.margin = flt(item.rate - item.valuation_rate);
 			}else{
 				item.margin = flt(item.base_amount/item.total_amount)*100;
 			}
 		}
+	
+		item.total_amount = flt(flt(item.rate)*flt(item.qty));
+		item.base_amount = flt(flt(item.valuation_rate)*flt(item.qty));
+		item.gross_profit = item.total_amount - item.base_amount;
+	
 		cur_frm.refresh_fields("items");
 	}
-	
 });
 
 frappe.ui.form.on('Estimates Item', {
@@ -184,7 +183,6 @@ frappe.ui.form.on('Estimates Item', {
 								frm.events.calculate_items_total(item, false);
 								frm.trigger("calculate_totals");
 							}
-
 						]);
 					}
 				}
@@ -232,6 +230,18 @@ frappe.ui.form.on('Estimates Item', {
 		frappe.run_serially([
 			() => {
 				frm.events.calculate_items_total(item, true)
+			},
+			() => {
+				frm.trigger("calculate_totals");
+			}
+
+		]);
+	},
+	valuation_rate:function(frm, cdt, cdn){
+		var item = frappe.get_doc(cdt, cdn);
+		frappe.run_serially([
+			() => {
+				frm.events.calculate_items_total(item, false)
 			},
 			() => {
 				frm.trigger("calculate_totals");

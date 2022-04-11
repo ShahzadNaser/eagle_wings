@@ -17,11 +17,12 @@
   "section_break_5",
   "items",
   "section_break_7",
+  "total_qty",
   "note",
   "column_break_8",
   "sub_total",
   "markup",
-  "total_qty",
+  "markup_percent",
   "total",
   "amended_from"
  ],
@@ -106,7 +107,7 @@
   {
    "fieldname": "markup",
    "fieldtype": "Currency",
-   "label": "Markup",
+   "label": "Markup Amount",
    "options": "Currency",
    "read_only": 1
   },
@@ -156,12 +157,19 @@
    "hidden": 1,
    "label": " Exchange Rate",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "markup_percent",
+   "fieldtype": "Percent",
+   "label": "Margin %",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-03-15 19:09:18.752242",
+ "modified": "2022-03-17 10:27:41.751492",
  "modified_by": "Administrator",
  "module": "Eagle Wings",
  "name": "Estimates",
