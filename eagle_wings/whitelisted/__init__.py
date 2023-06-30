@@ -7,6 +7,6 @@ def get_item_details(args, doc=None, for_validate=False, overwrite_warehouse=Tru
     out = get_item_details(args, doc=None, for_validate=False, overwrite_warehouse=True)
     args = process_args(args)
     if args.get("doctype") in ["Quotation"]:
-       out["last_purchase_rate"] = frappe.db.get_value("Item",args.get("item_code"),"last_purchase_rate") or 0 
+       out["last_purchase_rate"] = frappe.db.get_value("Item Price",{"item_code":args.get("item_code"),"price_list":"Standard Buying"},"price_list_rate") or 0 
 
     return out
