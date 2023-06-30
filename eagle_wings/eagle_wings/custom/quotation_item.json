@@ -17,7 +17,7 @@
    "description": null,
    "docstatus": 0,
    "dt": "Quotation Item",
-   "fetch_from": "item_code.valuation_rate",
+   "fetch_from": "",
    "fetch_if_empty": 0,
    "fieldname": "cost",
    "fieldtype": "Currency",

@@ -126,9 +126,9 @@ doctype_js = {"Quotation" : "public/js/quotation.js"}
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "eagle_wings.event.get_events"
-# }
+override_whitelisted_methods = {
+	"erpnext.stock.get_item_details.get_item_details": "eagle_wings.whitelisted.get_item_details"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

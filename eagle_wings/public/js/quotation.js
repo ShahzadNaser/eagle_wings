@@ -112,7 +112,8 @@ frappe.ui.form.on("Quotation Item",{
 	},
 	price_list_rate: function(frm, cdt, cdn){
 		var item = frappe.get_doc(cdt, cdn);
-		//item.cost = item.valuation_rate;
+		item.cost = item.last_purchase_rate;
+		console.log(item.last_purchase_rate);
 		frappe.run_serially([
 			() => {
 				frm.events.calculate_items_total(item)
